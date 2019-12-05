@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://unpkg.com/marked@0.3.6"></script>
+    <script src="https://unpkg.com/lodash@4.16.0"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style>
+        body{
+            opacity: 0;
+        }
+        .edit-dblclick:disabled{
+            background: unset;
+            color: unset;
+        }
+    </style>
+</head>
+
+<body class="vh-100">
+<div class="container h-100 border border-success" id="app" style="overflow-x: hidden; overflow-y: auto;">
+    <div class="row">
+        <div class="col-12">
+            <ul class="list-group d-flex flex-row">
+                <li class="list-group-item">
+                    <a href="./index.html">Realtime</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="./index2.html">Firestore</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h1 class="animated bouncein font-weight-bold">
+                Firebase - Firestore
+            </h1>
+        </div>
+    </div>
+    <form @submit="addData(fData);$event.preventDefault()">
+    <div class="row">
+
+            <div class="form-group col-md-6 col-12">
+                <label for="" class="font-weight-bold">Name</label>
+                <input type="text" class="form-control" placeholder="Name here..." v-model.trim="fData.name" required/>
+            </div>
+            <div class="form-group col-md-6 col-12">
+                <label for="" class="font-weight-bold">Email</label>
+                <input type="email" class="form-control" placeholder="Email here..." v-model.trim="fData.email"
+                       required/>
+            </div>
+            <div class="form-group col-md-3 col-12">
+                <button class="btn btn-primary btn-block btn-lg text-uppercase font-weight-bold"
+                        :disabled="!fData.name || !fData.email">
+                    Send
+                </button>
+            </div>
+                <div class="form-group col-md col-12 d-flex align-items-center">
+                    <div class="small text-muted">
+                        {{fData}}
+                    </div>
+                </div>
+
+        <hr/>
+
+    </div>
+    </form>
+    <div class="row">
+        <div class="item-lista col-md-6 col-12 " v-for="(item,idx) in lista" :key="item">
+            <div class="card mt-2">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="row">
+                                <div class="col-12 text-break">{{item.id}}</div>
+                                <div class="col-12 d-flex flex-column justify-content-center">
+                                    <div>
+                                        <input type="text" :value="item.data().name" style="border: 0"
+                                        @blur="onBlurInput($event)"
+                                        />
+                                    </div>
+                                    <div class="font-weight-bold text-primary">{{item.data().email}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col d-flex align-items-start justify-content-end ">
+                            <!--                    <button class="btn btn-danger font-weight-bold" @click="removeItem(item)">-->
+                            <!--                        -->
+                            <!--                    </button>-->
+                            <span class="text-danger cursor font-weight-bold"
+                                  style="font-size: 40px; line-height: 1; cursor: pointer"
+                                  @click="removeItem(item)">&#215;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 " v-if="lista.length < 1">
+            <hr/>
+            <h3 class="font-weight-bold text-danger text-uppercase">
+                Lista Vazia
+            </h3>
+            <hr/>
+        </div>
+    </div>
+</div>
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+
+
+<script>
+    var ref;
+    var app = new Vue({
+        el: '#app',
+        data: {
+            lista: [],
+            fData: {name: null, email: null}
+        },
+        computed: {},
+        methods: {
+            addData: function (data) {
+                let tmpData = Object.assign({},data);
+                tmpData.email = String(tmpData.email).toLowerCase();
+                // console.log(tmpData);
+                // return false;
+                db.collection("users").add(tmpData)
+                    .then(res => {
+                        res.get()
+                            .then(snap => {
+                                this.lista.unshift(snap);
+                            })
+                        console.log(res);
+                        Object.keys(data).forEach(el => {
+                            data[el] = null;
+                        });
+
+                        elInpu = document.querySelector('.item-lista:last-child');
+                        if (elInpu)
+                            elInpu.scrollIntoView()
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            },
+            removeItem: function (data) {
+                console.log("removeItem: " + data.id)
+                let confirm = window.confirm('Really???');
+                if (confirm) {
+                    db.collection('users').doc(data.id).delete()
+                        .then(res => {
+                            this.lista.splice(this.lista.indexOf(data), 1);
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        });
+                }
+            },
+            onFocusInput: function (e) {
+                console.log(e)
+                // e.target.parentNode.style.filter = 'blur(3px)';
+                e.target.style.transition = 'all 0.5s';
+                e.target.style.transform = 'scale(1.1) translate(10px,5px)';
+                // document.querySelectorAll('*')
+                // .forEach(el=>{
+                //     if(el != e.target)
+                //         el.style.filter = 'blur(1px)';
+                //     else{
+                //         console.log('SAME');
+                //         console.log(el, e.target);
+                //         el.style.filter = 'blur(0px)';
+                //     }
+                // });
+            }
+            ,
+            onBlurInput: function (e) {
+                console.log(e);
+                // e.target.classList.add('animated');
+                // e.target.classList.add('bounce');
+                e.target.style.animation = 'bounce 1s 1';
+                setTimeout(()=>{e.target.style.animation = 'unset';},1000);
+                // document.querySelectorAll('*')
+                //     .forEach(el=>{
+                //         if(el != e.target)
+                //             el.style.filter = 'blur(0px)';
+                //     });
+            },
+            removeDisabled:function(e){
+                console.log('dblclick')
+            }
+        }
+    });
+    var db;
+    var firebaseConfig = {
+        apiKey: "AIzaSyDMA6c6mtcvo-Zu6uOTd7eEZ51SRqvUEYU",
+        authDomain: "vue-test-f3336.firebaseapp.com",
+        databaseURL: "https://vue-test-f3336.firebaseio.com",
+        projectId: "vue-test-f3336",
+        storageBucket: "vue-test-f3336.appspot.com",
+        messagingSenderId: "179719188314",
+        appId: "1:179719188314:web:71d841c65d53beeb870d63",
+        measurementId: "G-BSV1BMYPSR"
+    };
+    var firestoreConfig = {
+        apiKey: "AIzaSyDMA6c6mtcvo-Zu6uOTd7eEZ51SRqvUEYU",
+        authDomain: "vue-test-f3336.firebaseapp.com",
+        projectId: "vue-test-f3336"
+    };
+    window.onload = () => {
+
+    };
+    db = firebase.initializeApp(firebaseConfig).firestore();
+    //
+    //
+    db.collection('users')
+        .get()
+        .then(res => {
+            res.forEach(el => {
+                console.log(el.data());
+                this.app.lista.push(el);
+                console.log(el);
+            });
+            document.body.style.opacity = 1;
+        })
+        .catch(err => {
+            console.log(err);
+            document.body.style.opacity = 1;
+        });
+    // };
+</script>
+
+</html>
