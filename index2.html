@@ -15,10 +15,11 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <style>
-        body{
+        body {
             opacity: 0;
         }
-        .edit-dblclick:disabled{
+
+        .edit-dblclick:disabled {
             background: unset;
             color: unset;
         }
@@ -26,93 +27,93 @@
 </head>
 
 <body class="vh-100">
-<div class="container h-100 border border-success" id="app" style="overflow-x: hidden; overflow-y: auto;">
-    <div class="row">
-        <div class="col-12">
-            <ul class="list-group d-flex flex-row">
-                <li class="list-group-item">
-                    <a href="./index.html">Realtime</a>
-                </li>
-                <li class="list-group-item">
-                    <a href="./index2.html">Firestore</a>
-                </li>
-            </ul>
+    <div class="container h-100 border border-success" id="app" style="overflow-x: hidden; overflow-y: auto;">
+        <div class="row">
+            <div class="col-12">
+                <ul class="list-group d-flex flex-row">
+                    <li class="list-group-item">
+                        <a href="./index.html">Realtime</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="./index2.html">Firestore</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <h1 class="animated bounce font-weight-bold text-primary text-uppercase">
-                Firebase - Firestore
-            </h1>
+        <div class="row">
+            <div class="col-12">
+                <h1 class="animated bounce font-weight-bold text-primary text-uppercase">
+                    Firebase - Firestore
+                </h1>
+            </div>
         </div>
-    </div>
-    <form @submit="addData(fData);$event.preventDefault()">
-    <div class="row">
+        <form @submit="addData(fData);$event.preventDefault()">
+            <div class="row">
 
-            <div class="form-group col-md-6 col-12">
-                <label for="" class="font-weight-bold">Name</label>
-                <input type="text" class="form-control" placeholder="Name here..." v-model.trim="fData.name" required/>
-            </div>
-            <div class="form-group col-md-6 col-12">
-                <label for="" class="font-weight-bold">Email</label>
-                <input type="email" class="form-control" placeholder="Email here..." v-model.trim="fData.email"
-                       required/>
-            </div>
-            <div class="form-group col-md-3 col-12">
-                <button class="btn btn-primary btn-block btn-lg text-uppercase font-weight-bold"
+                <div class="form-group col-md-6 col-12">
+                    <label for="" class="font-weight-bold">Name</label>
+                    <input type="text" class="form-control" placeholder="Name here..." v-model.trim="fData.name"
+                        required />
+                </div>
+                <div class="form-group col-md-6 col-12">
+                    <label for="" class="font-weight-bold">Email</label>
+                    <input type="email" class="form-control" placeholder="Email here..." v-model.trim="fData.email"
+                        required />
+                </div>
+                <div class="form-group col-md-3 col-12">
+                    <button class="btn btn-primary btn-block btn-lg text-uppercase font-weight-bold"
                         :disabled="!fData.name || !fData.email">
-                    Send
-                </button>
-            </div>
+                        Send
+                    </button>
+                </div>
                 <div class="form-group col-md col-12 d-flex align-items-center">
                     <div class="small text-muted">
                         {{fData}}
                     </div>
                 </div>
 
-        <hr/>
+                <hr />
 
-    </div>
-    </form>
-    <div class="row">
-        <div class="item-lista col-md-6 col-12 " v-for="(item,idx) in lista" :key="item">
-            <div class="card mt-2">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="row">
-                                <div class="col-12 text-break">{{item.id}}</div>
-                                <div class="col-12 d-flex flex-column justify-content-center">
-                                    <div>
-                                        <input type="text" :value="item.data().name" style="border: 0"
-                                        @blur="onBlurInput($event)"
-                                        />
+            </div>
+        </form>
+        <div class="row">
+            <div class="item-lista col-md-6 col-12 " v-for="(item,idx) in lista" :key="item">
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="col-12 text-break">{{item.id}}</div>
+                                    <div class="col-12 d-flex flex-column justify-content-center">
+                                        <div>
+                                            <input type="text" :value="item.data().name" style="border: 0"
+                                                @blur="onBlurInput($event)" />
+                                        </div>
+                                        <div class="font-weight-bold text-primary">{{item.data().email}}</div>
                                     </div>
-                                    <div class="font-weight-bold text-primary">{{item.data().email}}</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col d-flex align-items-start justify-content-end ">
-                            <!--                    <button class="btn btn-danger font-weight-bold" @click="removeItem(item)">-->
-                            <!--                        -->
-                            <!--                    </button>-->
-                            <span class="text-danger cursor font-weight-bold"
-                                  style="font-size: 40px; line-height: 1; cursor: pointer"
-                                  @click="removeItem(item)">&#215;</span>
+                            <div class="col d-flex align-items-start justify-content-end ">
+                                <!--                    <button class="btn btn-danger font-weight-bold" @click="removeItem(item)">-->
+                                <!--                        -->
+                                <!--                    </button>-->
+                                <span class="text-danger cursor font-weight-bold"
+                                    style="font-size: 40px; line-height: 1; cursor: pointer"
+                                    @click="removeItem(item)">&#215;</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-12 " v-if="lista.length < 1">
-            <hr/>
-            <h3 class="font-weight-bold text-danger text-uppercase">
-                Lista Vazia
-            </h3>
-            <hr/>
+            <div class="col-12 " v-if="lista.length < 1">
+                <hr />
+                <h3 class="font-weight-bold text-danger text-uppercase">
+                    Lista Vazia
+                </h3>
+                <hr />
+            </div>
         </div>
     </div>
-</div>
 </body>
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
@@ -129,12 +130,12 @@
         el: '#app',
         data: {
             lista: [],
-            fData: {name: null, email: null}
+            fData: { name: null, email: null }
         },
         computed: {},
         methods: {
             addData: function (data) {
-                let tmpData = Object.assign({},data);
+                let tmpData = Object.assign({}, data);
                 tmpData.email = String(tmpData.email).toLowerCase();
                 // console.log(tmpData);
                 // return false;
@@ -192,14 +193,14 @@
                 // e.target.classList.add('animated');
                 // e.target.classList.add('bounce');
                 e.target.style.animation = 'bounce 1s 1';
-                setTimeout(()=>{e.target.style.animation = 'unset';},1000);
+                setTimeout(() => { e.target.style.animation = 'unset'; }, 1000);
                 // document.querySelectorAll('*')
                 //     .forEach(el=>{
                 //         if(el != e.target)
                 //             el.style.filter = 'blur(0px)';
                 //     });
             },
-            removeDisabled:function(e){
+            removeDisabled: function (e) {
                 console.log('dblclick')
             }
         }
