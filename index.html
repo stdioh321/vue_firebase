@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://unpkg.com/marked@0.3.6"></script>
+    <script src="https://unpkg.com/lodash@4.16.0"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <style></style>
+</head>
+
+<body class="vh-100">
+    <div class="container" id="app">
+        <div class="row">
+            <div class="col-12">
+                <ul class="list-group d-flex flex-row">
+                    <li class="list-group-item">
+                        <a href="./index.html">Realtime</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="./index2.html">Firestore</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row  no-gutters">
+            <div class="col-12">
+                <h1 class="font-weight-bold text-uppercase">
+                    Firebase - Realtime Database
+                </h1>
+            </div>
+            <div class="col-12 d-flex align-items-center">
+                <!-- <div class="btn btn-primary btn-lg text-uppercase font-weight-bold ml-1" @click="">
+                    Add
+                </div> -->
+                <input type="text" class="form-control ml-1" v-model="input" @keyup.enter="addNew(input, $event);"
+                    placeholder="Type here...." maxlength="9"/>
+            </div>
+            <div class="col-12 mt-2">
+                <ul class="list-group">
+                    <div class="row  no-gutters">
+                        <div class="col-md-6 col-12" v-for="(item,idx) in lista" :key="idx">
+                            <li class="list-group-item px-1">
+                                <div class="row no-gutters">
+                                    <div class="col d-flex justify-content-between">
+                                        <div class="d-flex flex-column">
+                                            <div style="line-height: 1;">{{item.id}} </div>
+                                            <div class="font-weight-bold d-flex align-items-center justify-content-center">{{item.name}}</div>
+                                        </div>
+                                        <div class="">
+                                            <button class="btn btn-danger font-weigth-bold"
+                                                @click="removeItem(item.id)">
+                                                &#10008;
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </li>
+                        </div>
+                    </div>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.0/firebase-database.js"></script>
+
+
+<script>
+    var ref;
+    var app = new Vue({
+        el: '#app',
+        data: {
+            data: null,
+            input: null,
+            lista: []
+        },
+        computed: {
+        },
+        methods: {
+            addNew: function (str = "",e) {
+                e.target.disabled = true;
+                ref.child('test').push({ name: str })
+                    .then(res => {
+                        console.log(res);
+                    // setTimeout(()=>{
+                        e.target.disabled = false;
+                        e.target.focus();
+                        this.input = null;
+                    // },3000);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        e.target.disabled = false;
+                    });
+            },
+            removeItem: function (id) {
+                console.log(id);
+                ref.child('test/' + id).remove()
+                    .then(el => {
+                        console.log(el);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+            }
+        }
+    });
+var db;
+
+    window.onload = () => {
+        var firebaseConfig = {
+            apiKey: "AIzaSyDMA6c6mtcvo-Zu6uOTd7eEZ51SRqvUEYU",
+            authDomain: "vue-test-f3336.firebaseapp.com",
+            databaseURL: "https://vue-test-f3336.firebaseio.com",
+            projectId: "vue-test-f3336",
+            storageBucket: "vue-test-f3336.appspot.com",
+            messagingSenderId: "179719188314",
+            appId: "1:179719188314:web:71d841c65d53beeb870d63",
+            measurementId: "G-BSV1BMYPSR"
+        };
+        var firestoreConfig = {
+            apiKey: "AIzaSyDMA6c6mtcvo-Zu6uOTd7eEZ51SRqvUEYU",
+            authDomain: "vue-test-f3336.firebaseapp.com",
+            projectId: "vue-test-f3336"
+            };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        ref = firebase.app().database().ref();
+
+        // db = firebase.initializeApp(firebaseConfig).firestore();
+
+
+
+    // db.collection('users')
+    //     .get()
+    //     .then(res=>{
+    //         console.log(res)
+    //     })
+    //     .catch(err=>{
+    //         console.log(err);
+    //     })
+
+        ref.child('test').on('child_added', function (el) {
+            // console.log('child_added', el.val());
+        });
+
+        ref.child('test').once('value')
+            .then(res => {
+                console.log(res.val());
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        ref.child('test').on('value', function (snap) {
+
+            // console.log('snap.val() ', snap.val());
+            this.app.lista = [];
+            if (!snap.val()) return false;
+            let tmp = Object.keys(snap.val()).forEach((el, idx) => {
+                let tmpObj = snap.val()[el];
+                tmpObj.id = el;
+                // console.log(tmpObj);
+                this.app.lista.push(tmpObj);
+
+            });
+        })
+
+        // ref.
+        // firebase.analytics();
+    };
+
+    // function addNew() {
+    //     ref.child('test').push({ name: (new Date()).getTime() })
+    //         .then(res => {
+    //             console.log(res);
+    //         })
+    //         .catch(err => {
+    //             console.log(err);
+    //         });
+    // }
+</script>
+
+</html>
